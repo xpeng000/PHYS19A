@@ -129,30 +129,91 @@ print("The weighted average acceleration is %.3f +/- %.3f m/s^2" %(weighted_ave,
 # Method 2: Fitting with Linear Regression
 deltaT = file_1[0][1]- file_1[0][0]
 
-# from Sagar's slide
+# question 6, from Sagar's slide
 velVsTime_1 = np.empty((2, 0), float)
 for i in range(1, len(file_1[0])-1):
     velocity_1 = (file_1[1][i+1]-file_1[1][i-1])/(2*deltaT)
-    velVsTime_1 = np.append(velVsTime_1, [[file_1[0][i-1]], [velocity_1]], axis = 1)
+    velVsTime_1 = np.append(velVsTime_1, [[file_1[0][i]], [velocity_1]], axis = 1)
+print("Data_1.txt file:")
 for i in range(10):
     print("The velocity at time %.3f seconds is %.3f m/s" %(velVsTime_1[0][i], velVsTime_1[1][i]))
 
+velVsTime_2 = np.empty((2, 0), float)
+for i in range(1, len(file_2[0])-1):
+    velocity_2 = (file_2[1][i+1]-file_2[1][i-1])/(2*deltaT)
+    velVsTime_2 = np.append(velVsTime_2, [[file_2[0][i]], [velocity_2]], axis = 1)
+print("Data_2.txt file:")
+for i in range(10):
+    print("The velocity at time %.3f seconds is %.3f m/s" %(velVsTime_2[0][i], velVsTime_2[1][i]))
+    
+velVsTime_3 = np.empty((2, 0), float)
+for i in range(1, len(file_3[0])-1):
+    velocity_3 = (file_3[1][i+1]-file_3[1][i-1])/(2*deltaT)
+    velVsTime_3 = np.append(velVsTime_3, [[file_3[0][i]], [velocity_3]], axis = 1)
+print("Data_3.txt file:")
+for i in range(10):
+    print("The velocity at time %.3f seconds is %.3f m/s" %(velVsTime_3[0][i], velVsTime_3[1][i]))
+    
+velVsTime_4 = np.empty((2, 0), float)
+for i in range(1, len(file_4[0])-1):
+    velocity_4 = (file_4[1][i+1]-file_4[1][i-1])/(2*deltaT)
+    velVsTime_4 = np.append(velVsTime_4, [[file_4[0][i]], [velocity_4]], axis = 1)
+print("Data_4.txt file:")
+for i in range(10):
+    print("The velocity at time %.3f seconds is %.3f m/s" %(velVsTime_4[0][i], velVsTime_4[1][i]))
+    
+velVsTime_5 = np.empty((2, 0), float)
+for i in range(1, len(file_5[0])-1):
+    velocity_5 = (file_5[1][i+1]-file_5[1][i-1])/(2*deltaT)
+    velVsTime_5 = np.append(velVsTime_5, [[file_5[0][i]], [velocity_5]], axis = 1)
+print("Data_5.txt file:")
+for i in range(10):
+    print("The velocity at time %.3f seconds is %.3f m/s" %(velVsTime_5[0][i], velVsTime_5[1][i]))
 
 # use Scipy fit to find acceleration and its error
-def func_velo(t, v0, a):
-    return v0+a*t
+def func_velo(t, a):
+    return a*t
 
-par2, cov2 = curve_fit(func_velo, velVsTime_1[0], velVsTime_1[1])
-v0 = par2[0]
-g_2 = par2[1]
-g_err_2 = np.sqrt(cov2[1, 1])
-print(g_2)
-print("The acceleration obtained from performing least squares curve fitting is =  %.2f +/- %.2f m/s^2" %(g_2, g_err_2))
+# question 7
+par21, cov21 = curve_fit(func_velo, velVsTime_1[0], velVsTime_1[1])
+g_21 = par21[0]
+g_err_21 = np.sqrt(cov21[0, 0])
+print("The acceleration obtained from performing least squares curve fitting for data_1.txt is =  %.1f +/- %.1f m/s^2" %(g_21, g_err_21))
 print()
+
+par22, cov22 = curve_fit(func_velo, velVsTime_2[0], velVsTime_2[1])
+g_22 = par22[0]
+g_err_22 = np.sqrt(cov22[0, 0])
+print("The acceleration obtained from performing least squares curve fitting for data_2.txt is =  %.1f +/- %.1f m/s^2" %(g_22, g_err_22))
+print()
+
+par23, cov23 = curve_fit(func_velo, velVsTime_3[0], velVsTime_3[1])
+g_23 = par23[0]
+g_err_23 = np.sqrt(cov23[0, 0])
+print("The acceleration obtained from performing least squares curve fitting for data_3.txt is =  %.1f +/- %.1f m/s^2" %(g_23, g_err_23))
+print()
+
+par24, cov24 = curve_fit(func_velo, velVsTime_4[0], velVsTime_4[1])
+g_24 = par24[0]
+g_err_24 = np.sqrt(cov24[0, 0])
+print("The acceleration obtained from performing least squares curve fitting for data_4.txt is =  %.1f +/- %.1f m/s^2" %(g_24, g_err_24))
+print()
+
+par25, cov25 = curve_fit(func_velo, velVsTime_5[0], velVsTime_5[1])
+g_25 = par25[0]
+g_err_25 = np.sqrt(cov25[0, 0])
+print("The acceleration obtained from performing least squares curve fitting for data_1.txt is =  %.1f +/- %.1f m/s^2" %(g_25, g_err_25))
+print()
+
+# acceleration weighted average:
+weighted_ave_2 = (g_21/g_err_21**2+g_22/g_err_22**2+g_23/g_err_23**2+g_24/g_err_24**2+g_25/g_err_25**2)/(1/g_err_21**2+1/g_err_22**2+1/g_err_23**2+1/g_err_24**2+1/g_err_25**2)
+weighted_err_2 = np.sqrt(1/(1/g_err_21**2+1/g_err_22**2+1/g_err_23**2+1/g_err_24**2+1/g_err_25**2))
+print("The weighted average acceleration is %.2f +/- %.2f m/s^2" %(weighted_ave_2, weighted_err_2))
+
 
 slope, intercept, r_value, p_value, std_err = stats.linregress(velVsTime_1[0], velVsTime_1[1])
 plt.plot(velVsTime_1[0], velVsTime_1[1], 'o')
-plt.plot(velVsTime_1[0], func_velo(velVsTime_1[0], g_2, v0))
+plt.plot(velVsTime_1[0], func_velo(velVsTime_1[0], g_21))
 plt.xlabel("Time (s)")
 plt.ylabel("Velocity (m/s)")
 plt.legend(['Scatter plot','Best fit line g parameter: (%.3f +/- %.3f) m/s^2' %(slope, std_err)])
