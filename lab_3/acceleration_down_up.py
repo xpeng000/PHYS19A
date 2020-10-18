@@ -35,8 +35,8 @@ print(velTime)
 # linear fit (linregress) the velocity data to get accelerations
 slope, intercept, r_value, p_value, std_err = stats.linregress(velTime[0], velTime[1])
 # slope ==> acceleration 
-print("The acceleration from linear regression is (%.2f +/- %.2f) m/s^2" %(slope, std_err))
-print("The linear regression best fit function for velocity is V = %.2ft%.2f" %(slope, intercept))
+print("The acceleration from linear regression is (%.3f +/- %.3f) m/s^2" %(slope, std_err))
+print("The linear regression best fit function for velocity is V = %.3ft%.3f" %(slope, intercept))
 
 # raw data plot
 plt.plot(velTime[0], velTime[1], 'o')
@@ -51,7 +51,7 @@ plt.plot(velTime[0], velTime[1], 'o')
 plt.plot(velTime[0], velTime[0]*slope+intercept)
 plt.xlabel("Time (s)")
 plt.ylabel("Velocity (m/s)")
-plt.legend(['Scatter plot','Linear regression V(t) = (%.2f*t + %.2f) m/s' %(slope, intercept)])
+plt.legend(['Scatter plot','Linear regression V(t) = (%.3f*t + %.3f) m/s' %(slope, intercept)])
 plt.title("Time vs. Velocity with linear regression for downwards motion")
 plt.show()
 
@@ -67,8 +67,8 @@ print(velTimeU)
 # linear fit (linregress) the velocity data to get accelerations
 slope, intercept, r_value, p_value, std_err = stats.linregress(velTimeU[0], velTimeU[1])
 # slope ==> acceleration 
-print("The acceleration from linear regression is (%.2f +/- %.2f) m/s^2" %(slope, std_err))
-print("The linear regression best fit function for velocity is V = %.2ft + %.2f" %(slope, intercept))
+print("The acceleration from linear regression is (%.3f +/- %.3f) m/s^2" %(slope, std_err))
+print("The linear regression best fit function for velocity is V = %.3ft + %.3f" %(slope, intercept))
 
 # raw data plot
 plt.plot(velTimeU[0], velTimeU[1], 'o')
@@ -83,7 +83,7 @@ plt.plot(velTimeU[0], velTimeU[1], 'o')
 plt.plot(velTimeU[0], velTimeU[0]*slope+intercept)
 plt.xlabel("Time (s)")
 plt.ylabel("Velocity (m/s)")
-plt.legend(['Scatter plot','Linear regression V(t) = (%.2f*t + %.2f) m/s' %(slope, intercept)])
+plt.legend(['Scatter plot','Linear regression V(t) = (%.3f*t + %.3f) m/s' %(slope, intercept)])
 plt.title("Time vs. Velocity with linear regression for upwards motion")
 plt.show()
 
@@ -106,6 +106,7 @@ plt.title("Time vs. Position data for upwards motion")
 plt.show()
 
 # quadratic fitting
+# downwards
 def func(t, a, u, xo):
     return xo + u*t + 0.5*a*t**2
 par, cov = curve_fit(func, time, down)
@@ -113,25 +114,23 @@ plt.plot(time, down.transpose(), 'o')
 plt.plot(time, par[2]+par[1]*time+par[0]*0.5*time**2)
 plt.xlabel("Time (s)")
 plt.ylabel("Position (m)")
-plt.legend(['Scatter plot','Quadratic fitting P(t) = (%.2f*t^2 + %.2f*v0 + %.2f) m' %(par[0]*0.5, par[1], par[2])])
+plt.legend(['Scatter plot','Quadratic fitting P(t) = (%.3f*t^2 + %.3f*v0 + %.3f) m' %(par[0]*0.5, par[1], par[2])])
 plt.title("Time vs. Position with quadratic fitting for downwards motion")
 plt.show()
+print("acc downwards: %.3f +/- %.3f" %(par[0], np.sqrt(cov[0, 0])))
 
-print("acc downwards: %.2f +/- %.2f" %(par[0], cov[0, 0]))
-
+# upwards
 par2, cov2 = curve_fit(func, timeU, up)
 plt.plot(timeU, up.transpose(), 'o')
 plt.plot(timeU, par2[2]+par2[1]*timeU+par2[0]*0.5*timeU**2)
 plt.xlabel("Time (s)")
 plt.ylabel("Position (m)")
-plt.legend(['Scatter plot','Quadratic fitting P(t) = (%.2f*t^2 + %.2f*v0 + %.2f) m' %(par2[0]*0.5, par2[1], par2[2])])
+plt.legend(['Scatter plot','Quadratic fitting P(t) = (%.3f*t^2 + %.3f*v0 + %.3f) m' %(par2[0]*0.5, par2[1], par2[2])])
 plt.title("Time vs. Position with quadratic fitting for upwards motion")
 plt.show()
+print("acc upwards: %.3f +/- %.3f" %(par2[0], np.sqrt(cov2[0, 0])))
 
-print("acc upwards: %.2f +/- %.2f" %(par2[0], cov2[0, 0]))
-
-# chi square test downwards
-# plot residuals
+# plot residuals downards 
 res = down.transpose()-func(time, par[0], par[1], par[2])
 n, bins, patches = plt.hist(res, bins = 8)
 mean = np.mean(res)
@@ -140,14 +139,46 @@ xmin, xmax = plt.xlim()
 x = np.linspace(xmin,xmax, 1000)
 gaus = (bins[1]- bins[0])*len(res)*norm.pdf(x, mean,std)
 plt.plot(x, gaus, 'k')
-plt.title("Residual distribution for downwards motion mu = %.2f std=%.2f" %(mean, std))
+plt.title("Residual distribution for downwards motion mu = %.3f std=%.3f" %(mean, std))
 plt.show()
 
+# plot residuals upwards
+resU = up.transpose()-func(timeU, par2[0], par2[1], par2[2])
+n, bins, patches = plt.hist(resU, bins = 8)
+mean = np.mean(resU)
+std = np.std(resU)
+xmin, xmax = plt.xlim()
+x = np.linspace(xmin,xmax, 1000)
+gaus = (bins[1]- bins[0])*len(resU)*norm.pdf(x, mean,std)
+plt.plot(x, gaus, 'k')
+plt.title("Residual distribution for upwards motion mu = %.3f std=%.3f" %(mean, std))
+plt.show()
+
+# combine res and resU to a new array
+resNet = np.concatenate((res, resU))
+n, bins, patches = plt.hist(resNet, bins = 8)
+mean = np.mean(resNet)
+std = np.std(resNet)
+xmin, xmax = plt.xlim()
+x = np.linspace(xmin,xmax, 1000)
+gaus = (bins[1]- bins[0])*len(resNet)*norm.pdf(x, mean,std)
+plt.plot(x, gaus, 'k')
+plt.title("Residual distribution for upwards and downwards motion combined together mu = %.3f std=%.3f" %(mean, std))
+plt.show()
+
+
 # Chi_square
-chi = np.sum(((down - func(time, par[0], par[1], par[2]))/error)**2)
+# downwards
+error = 0.5/1000
+chi = np.sum(((down.transpose() - func(time, par[0], par[1], par[2]))/error)**2)
 ndof = len(time) - 3
 chi_square = chi/ndof
 print(chi_square)
+
+# upwards
+chiU = np.sum(((up.transpose() - func(timeU, par2[0], par2[1], par2[2]))/error)**2)
+chi_squareU = chiU/ndof
+print(chi_squareU)
 
 
 
