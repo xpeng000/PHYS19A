@@ -177,7 +177,8 @@ print(chi_square)
 
 # upwards
 chiU = np.sum(((up.transpose() - func(timeU, par2[0], par2[1], par2[2]))/error)**2)
-chi_squareU = chiU/ndof
+ndofU = len(timeU) - 3
+chi_squareU = chiU/ndofU 
 print(chi_squareU)
 
 
